@@ -4,7 +4,14 @@ function postToWebSoc({term, breadth = 'ANY', department = 'ALL', courseNum = ''
                       instructorName = '', courseTitle = '', classType = 'ALL', units = '', days = '',
                       startTime = '', endTime = '', maxCap = '', fullCourses = 'ANY', cancelledCourses = 'EXCLUDE',
                       building = '', room = ''}) {
-    let opts = {
+
+    if (term === undefined) {
+        throw "Term not defined"
+    } else if (department === "ALL" && breadth === "ANY" && courseCodes === '' && instructorName === '') {
+        throw "Define at least on of department, breadth, courseCodes, or instructorName";
+    }
+
+    let postData = {
         url: "https://www.reg.uci.edu/perl/WebSoc",
         form: {
             Submit: 'Display Text Results',
@@ -31,7 +38,7 @@ function postToWebSoc({term, breadth = 'ANY', department = 'ALL', courseNum = ''
         }
     };
 
-    request.post(opts, function (err, res, body) {
+    request.post(postData, function (err, res, body) {
         console.log(body);
     });
 }
