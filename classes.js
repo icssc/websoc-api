@@ -84,21 +84,21 @@ class Course {
 
 class Section {
     constructor(sectionData) {
-        this._classCode = sectionData[0];
-        this._classType = sectionData[1];
-        this._sectionCode = sectionData[2];
-        this._units = sectionData[3];
-        this._instructors = sectionData[4];
-        this._times = sectionData[5];
-        this._places = sectionData[6];
-        this._finalExamDate = sectionData[7];
-        this._maxCapacity = sectionData[8];
-        this._numCurrentlyEnrolled = sectionData[9];
-        this._numOnWaitlist = sectionData[10];
-        this._numRequested = sectionData[11];
-        this._numNewOnlyReserved = sectionData[12];
-        this._restrictions = sectionData[13];
-        this._status = sectionData[14];
+        this._classCode = sectionData.classCode;
+        this._classType = sectionData.classType;
+        this._sectionCode = sectionData.sectionCode;
+        this._units = sectionData.units;
+        this._instructors = sectionData.instructors;
+        this._times = sectionData.times;
+        this._places = sectionData.places;
+        this._finalExamDate = sectionData.finalExamDate;
+        this._maxCapacity = sectionData.maxCapacity;
+        this._numCurrentlyEnrolled = sectionData.numCurrentlyEnrolled;
+        this._numOnWaitlist = sectionData.numOnWaitlist;
+        this._numRequested = sectionData.numRequested;
+        this._numNewOnlyReserved = sectionData.numNewOnlyReserved;
+        this._restrictions = sectionData.restrictions;
+        this._status = sectionData.status;
         this._comments = '';
     }
 
