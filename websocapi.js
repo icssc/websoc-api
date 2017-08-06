@@ -1,10 +1,9 @@
 const classes = require("./classes.js");
-const now = require("performance-now");
 const request = require("request");
 const cheerio = require("cheerio");
 
-
-function postToWebSoc({   term, breadth = 'ANY', department = 'ALL', courseNum = '', division = 'ANY', courseCodes = '',
+function postToWebSoc({
+                          term, breadth = 'ANY', department = 'ALL', courseNum = '', division = 'ANY', courseCodes = '',
                           instructorName = '', courseTitle = '', classType = 'ALL', units = '', days = '',
                           startTime = '', endTime = '', maxCap = '', fullCourses = 'ANY', cancelledCourses = 'EXCLUDE',
                           building = '', room = ''
@@ -40,11 +39,17 @@ function postToWebSoc({   term, breadth = 'ANY', department = 'ALL', courseNum =
             CancelledCourses: cancelledCourses,
             Bldg: building,
             Room: room,
-        }
+        },
     };
-
+    console.time('parseProcess');
     request.post(postData, (err, res, body) => {
-        callback(parseForClasses(body));
+        if (!err && res.statusCode == 200) {
+            callback(parseForClasses(body));
+            console.timeEnd('parseProcess');
+        } else {
+            console.err(err);
+        }
+
     });
 }
 
@@ -56,116 +61,134 @@ function parseForClasses(htmlBody) {
 
     root.find('tr').each(
         function () {
+            let row = $(this);
             let lastSchool;
             let lastDept;
             let lastCourse;
 
-            if ($(this).hasClass("college-title")) {
-                schools.push(new classes.School($(this).children('td').text()));
+            if (row.hasClass("college-title")) {
+                schools.push(new classes.School(row.children('td').text()));
                 lastSchool = getLast(schools);
-                lastSchool.addComment($(this).next().hasClass("college-comment") ? $(this).next().text() : '');
-            } else if ($(this).hasClass("dept-title")) {
+                lastSchool.addComment(row.next().hasClass("college-comment") ? row.next().text() : '');
+            } else if (row.hasClass("dept-title")) {
                 lastSchool = getLast(schools);
-                lastSchool.addDepartment(new classes.Department($(this).children('td').text()));
+                lastSchool.addDepartment(new classes.Department(row.children('td').text()));
                 lastDept = getLast(lastSchool.departments);
-                lastDept.addComment($(this).next().hasClass("dept-comment") ? $(this).next().text() : '');
-            } else if ($(this).hasClass("num-range-comment")) {
-                lastSchool = getLast(schools);
-                lastDept = getLast(lastSchool.departments);
-                lastDept.addComment($(this).text());
-            } else if ($(this).children("td").hasClass("CourseTitle")) {
+                lastDept.addComment(row.next().hasClass("dept-comment") ? row.next().text() : '');
+            } else if (row.hasClass("num-range-comment")) {
                 lastSchool = getLast(schools);
                 lastDept = getLast(lastSchool.departments);
-                lastDept.addCourse(new classes.Course($(this).children(".CourseTitle").text())); //Too many spaces, additional (Prerequisites) text
+                lastDept.addComment(row.text());
+            } else if (row.children("td").hasClass("CourseTitle")) {
+                lastSchool = getLast(schools);
+                lastDept = getLast(lastSchool.departments);
+                let courseName = row.children(".CourseTitle").text();
+                courseName = courseName.replace(/\s+/g, ' ').replace('(Prerequisites)', '').trim();
+                lastDept.addCourse(new classes.Course(courseName));
                 lastCourse = getLast(lastDept.courses);
-                lastCourse.addComment($(this).next().children().find(".Comments").text());
-            } else if ($(this).is("tr[valign='top'][bgcolor='#FFFFCC']") || $(this).is("tr[valign='top']")) {
+                lastCourse.addComment(row.next().children().find(".Comments").text());
+            } else if (row.is("tr[valign='top'][bgcolor='#FFFFCC']") || row.is("tr[valign='top']")) {
                 let sectionData = {};
                 let str = '';
 
-                $(this).find('td').each(function (i) {
+                row.find('td').each(function (i) {
+                    let cell = $(this);
+                    let cellText = cell.text();
                     switch (i) {
                         case 0:
-                            sectionData.classCode = $(this).text();
+                            sectionData.classCode = cellText;
                             str += sectionData.classCode + "  ";
                             break;
                         case 1:
-                            sectionData.classType = $(this).text();
+                            sectionData.classType = cellText;
                             str += sectionData.classType + "  ";
                             break;
                         case 2:
-                            sectionData.sectionCode = $(this).text();
+                            sectionData.sectionCode = cellText;
                             str += sectionData.sectionCode + "  ";
                             break;
                         case 3:
-                            sectionData.units = $(this).text();
+                            sectionData.units = cellText;
                             str += sectionData.units + "  ";
                             break;
                         case 4:
-                            sectionData.instructors = $(this).html().split("<br>");
+                            sectionData.instructors = cell.html().split("<br>");
+                            if (getLast(sectionData.instructors) === '') {
+                                sectionData.instructors.pop();
+                            }
                             str += sectionData.instructors + "  ";
-                            // TODO: Remove blank instructors from array
                             break;
                         case 5:
-                            sectionData.times = $(this).html().split("<br>");
+                            sectionData.times = cell.html().split("<br>");
+                            if (sectionData.times) {
+
+                            }
+                            sectionData.times.forEach(function (currentValue, index, array) {
+                                array[index] = array[index].replace('&#xA0;', '');
+                                array[index] = array[index].replace('- ', '-');
+                                if (array[index].includes('TBA')) {
+                                    array[index] = 'TBA'
+                                }
+                            });
                             str += sectionData.times + "  ";
                             break;
-                        //TODO: https://stackoverflow.com/questions/12482961/is-it-possible-to-change-values-of-the-array-when-doing-foreach-in-javascript
                         case 6:
-                            $(this).find('a').each(function (j, elem) {
+                            cell.find('a').each(function (j, elem) {
                                 $(this).replaceWith($(this).text());
                             });
-                            sectionData.places = $(this).html().split("<br>");
+                            sectionData.places = cell.html().split("<br>");
                             str += sectionData.places + "  ";
                             break;
                         case 7:
-                            sectionData.finalExamDate = $(this).text();
+                            sectionData.finalExamDate = cellText.trim();
+                            if (sectionData.finalExamDate.length === 0) {
+                                sectionData.finalExamDate = 'NONE';
+                            }
                             str += sectionData.finalExamDate + "  ";
-                            //TODO: Replace blank final dates with NONE
                             break;
                         case 8:
-                            sectionData.maxCapacity = $(this).text();
+                            sectionData.maxCapacity = cellText;
                             str += sectionData.maxCapacity + "  ";
                             break;
                         case 9:
-                            sectionData.numCurrentlyEnrolled = $(this).text();
+                            sectionData.numCurrentlyEnrolled = cellText;
                             str += sectionData.numCurrentlyEnrolled + "  ";
                             break;
                         case 10:
-                            sectionData.numOnWaitlist = $(this).text();
+                            sectionData.numOnWaitlist = cellText;
                             str += sectionData.numOnWaitlist + "  ";
                             break;
                         case 11:
-                            sectionData.numRequested = $(this).text();
+                            sectionData.numRequested = cellText;
                             str += sectionData.numRequested + "  ";
                             break;
                         case 12:
-                            sectionData.numNewOnlyReserved = $(this).text();
+                            sectionData.numNewOnlyReserved = cellText;
                             str += sectionData.numNewOnlyReserved + "  ";
                             break;
                         case 13:
-                            sectionData.restrictions = $(this).text();
+                            sectionData.restrictions = cellText.split('and');
+                            //TODO: Find out what 'or' means with restrictions
                             str += sectionData.restrictions + "  ";
-                            //TODO: Turn this to array.
                             break;
                         case 16:
-                            sectionData.status = $(this).text();
+                            sectionData.status = cellText;
                             str += sectionData.status + "  ";
                             break;
                         default:
                             break;
                     }
                 });
-
                 lastSchool = getLast(schools);
                 lastDept = getLast(lastSchool.departments);
                 lastCourse = getLast(lastDept.courses);
                 lastCourse.sections.push(new classes.Section(sectionData));
-
-                if ($(this).next().is("tr") && $(this).next().prop("valign") === undefined && !$(this).next().hasClass("blue-bar")) {
-                    getLast(lastCourse.sections).addComment($(this).next().text());
+                // console.log(str);
+                if (row.next().prop("valign") === undefined && !row.next().hasClass("blue-bar")) {
+                    getLast(lastCourse.sections).addComment(row.next().text());
                 }
             }
+
         });
 
     return schools;
@@ -175,8 +198,6 @@ function getLast(array) {
     return array[array.length - 1];
 }
 
-let t0 = now();
-postToWebSoc({term: "2017-92", department: "BIO SCI"}, (result) => {//console.log(result)
-let t1 = now();
-console.log((t1 - t0).toFixed(3));
+postToWebSoc({term: "2017-92", department: "BIO SCI"}, (result) => {
+    //console.log(result)
 });
