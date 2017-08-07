@@ -72,7 +72,7 @@ function parseForClasses(htmlBody) {
                 lastSchool = newSchool;
                 schools.push(newSchool);
             } else if (row.hasClass("dept-title")) {
-                let newDept = new classes.Department(row.children().text());
+                let newDept = new classes.Department(row.text());
                 newDept.addComment(row.next().hasClass("dept-comment") ? row.next().text().trim().replace(/\t+/g, '') : '');
                 lastSchool.addDepartment(newDept);
                 lastDept = newDept;
@@ -85,9 +85,10 @@ function parseForClasses(htmlBody) {
             } else if (row.is("tr[valign='top'][bgcolor='#fff0ff']")) {
                 let courseName = [row.text(), row.find('b').text()];
                 courseName[0] = courseName[0].replace(new RegExp('s+|' + courseName[1] + '|\\(Prerequisites\\)', 'g'), '').trim();
-                lastDept.addCourse(new classes.Course(courseName));
-                lastCourse = getLast(lastDept.courses);
-                lastCourse.addComment(row.next().children().find(".Comments").text());
+                let newCourse = new classes.Course(courseName);
+                lastDept.addCourse(newCourse);
+                newCourse.addComment(row.next().find('.Comments').text().trim().replace(/\s+/g, ' '));
+                lastCourse = newCourse
             } else if (row.is("tr[valign='top'][bgcolor='#FFFFCC']") || row.is("tr[valign='top']")) {
                 let sectionData = {};
 
@@ -109,7 +110,7 @@ function parseForClasses(htmlBody) {
                             break;
                         case 4:
                             sectionData.instructors = cell.html().split("<br>");
-                            if (getLast(sectionData.instructors) === '') {
+                            if (sectionData.instructors.slice(-1)[0] === '') {
                                 sectionData.instructors.pop();
                             }
                             break;
@@ -164,18 +165,15 @@ function parseForClasses(htmlBody) {
                     }
                 });
 
-                lastCourse.sections.push(new classes.Section(sectionData));
+                let newSection = new classes.Section(sectionData);
+                lastCourse.sections.push(newSection);
                 if (!row.next().hasClass("blue-bar") && row.next().prop("valign") === undefined) {
-                    getLast(lastCourse.sections).addComment(row.next().text());
+                    newSection.addComment(row.next().text());
                 }
             }
         });
 
     return schools;
-}
-
-function getLast(array) {
-    return array[array.length - 1];
 }
 
 postToWebSoc({term: "2017-92", department: "BIO SCI"}, (result) => {
