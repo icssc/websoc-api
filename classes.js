@@ -1,3 +1,5 @@
+'use strict'
+
 class School {
     constructor(name) {
         this._comments = "";

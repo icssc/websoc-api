@@ -59,37 +59,38 @@ function parseForClasses(htmlBody) {
 
     let schools = [];
 
+    let lastSchool;
+    let row;
+    let lastDept;
+    let lastCourse;
     root.find('tr').each(
         function () {
-            let row = $(this);
-            let lastSchool;
-            let lastDept;
-            let lastCourse;
-
+            row = $(this);
             if (row.hasClass("college-title")) {
-                schools.push(new classes.School(row.children('td').text()));
-                lastSchool = getLast(schools);
-                lastSchool.addComment(row.next().hasClass("college-comment") ? row.next().text() : '');
+                let newSchool = new classes.School(row.children().text());
+                newSchool.addComment(row.next().hasClass("college-comment") ? row.next().text() : '');
+                lastSchool = newSchool;
+                schools.push(newSchool);
             } else if (row.hasClass("dept-title")) {
-                lastSchool = getLast(schools);
-                lastSchool.addDepartment(new classes.Department(row.children('td').text()));
-                lastDept = getLast(lastSchool.departments);
-                lastDept.addComment(row.next().hasClass("dept-comment") ? row.next().text() : '');
+                let newDept = new classes.Department(row.children().text());
+                newDept.addComment(row.next().hasClass("dept-comment") ? row.next().text().trim().replace(/\t+/g, '') : '');
+                lastSchool.addDepartment(newDept);
+                lastDept = newDept;
             } else if (row.hasClass("num-range-comment")) {
-                lastSchool = getLast(schools);
-                lastDept = getLast(lastSchool.departments);
-                lastDept.addComment(row.text());
+                if (lastDept.comments === '') {
+                    lastDept.addComment(row.text().trim().replace(/\t+/g, ''));
+                } else {
+                    lastDept.addComment('\n\n' + row.text().trim().replace(/\t+/g, ''));
+                }
             } else if (row.is("tr[valign='top'][bgcolor='#fff0ff']")) {
-                lastSchool = getLast(schools);
-                lastDept = getLast(lastSchool.departments);
-                let courseName = row.children().text();
-                courseName = courseName.replace(/\s+/g, ' ').replace('(Prerequisites)', '').trim();
+                let courseName = [row.text(), row.find('b').text()];
+                courseName[0] = courseName[0].replace(new RegExp('s+|' + courseName[1] + '|\\(Prerequisites\\)', 'g'), '').trim();
                 lastDept.addCourse(new classes.Course(courseName));
                 lastCourse = getLast(lastDept.courses);
                 lastCourse.addComment(row.next().children().find(".Comments").text());
             } else if (row.is("tr[valign='top'][bgcolor='#FFFFCC']") || row.is("tr[valign='top']")) {
                 let sectionData = {};
-                let str = '';
+
                 row.find('td').each(function (i) {
                     let cell = $(this);
                     let cellText = cell.text();
@@ -162,16 +163,14 @@ function parseForClasses(htmlBody) {
                             break;
                     }
                 });
-                lastSchool = getLast(schools);
-                lastDept = getLast(lastSchool.departments);
-                lastCourse = getLast(lastDept.courses);
+
                 lastCourse.sections.push(new classes.Section(sectionData));
                 if (!row.next().hasClass("blue-bar") && row.next().prop("valign") === undefined) {
                     getLast(lastCourse.sections).addComment(row.next().text());
                 }
             }
-
         });
+
     return schools;
 }
 
