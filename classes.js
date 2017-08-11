@@ -76,7 +76,7 @@ class Department {
             if (index < array.length - 1) {
                 string += currentValue._name[0] + ' ' + currentValue._name[1] + ', ';
             } else {
-                string += currentValue._name + '\n';
+                string += currentValue._name[0] + ' ' + currentValue._name[1] + '\n';
             }
         });
         string += "Comments: \n" + this._comments + (this._comments ? '\n' : '');
@@ -114,13 +114,10 @@ class Course {
     toString() {
         let string = '';
         string += "Name: " + this._name[0] + ' ' + this.name[1] + '\n';
+        string += "Comments: \n" + this._comments + (this._comments ? "\n" : '');
         string += "Sections: \n";
         this._sections.forEach(function (currentValue, index, array) {
-            if (index < array.length - 1) {
-                string += currentValue.toString() + '\n';
-            } else {
-                string += currentValue.toString() + '\n';
-            }
+            string += currentValue.toString();
         });
         return string;
     }
@@ -216,7 +213,7 @@ class Section {
 
     toString() {
         return `${this._classCode} ${this._classType} ${this._sectionCode} ${this._units} [${this._instructors}] [${this._times}] [${this._places}] ${this._finalExamDate} ${this._maxCapacity} ${this._numCurrentlyEnrolled} ${this._numOnWaitlist} ${this._numRequested} ${this._numNewOnlyReserved} [${this._restrictions}] ${this._status}`
-        +'\n' + this._comments + (this._comments ? '' : '\n');
+        +'\n' + this._comments + '\n' + (this._comments ? "\n" : '');
     }
 }
 

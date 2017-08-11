@@ -9,7 +9,7 @@ function postToWebSoc({
                           instructorName = '', courseTitle = '', classType = 'ALL', units = '', days = '',
                           startTime = '', endTime = '', maxCap = '', fullCourses = 'ANY', cancelledCourses = 'EXCLUDE',
                           building = '', room = ''
-                      },  callback) {
+                      }, callback) {
 
     if (term === undefined || term === '') {
         throw new Error("Define the term");
@@ -44,9 +44,11 @@ function postToWebSoc({
         },
     };
 
+    console.time('total');
     request.post(postData, (err, res, body) => {
         if (!err && res.statusCode === 200) {
             callback(parseForClasses(body));
+            console.timeEnd('total');
         } else {
             console.err(err);
         }
@@ -63,38 +65,40 @@ function parseForClasses(htmlBody) {
     let row;
     let lastDept;
     let lastCourse;
+
     root.find('tr').each(
         function () {
             row = $(this);
             if (row.hasClass("college-title")) {
                 let newSchool = new classes.School(row.children().text());
-                newSchool.addComment(row.next().hasClass("college-comment") ? row.next().text() : '');
+                newSchool.addComment(row.next().hasClass("college-comment") ? sanitize(row.next().text()) : '');
                 lastSchool = newSchool;
                 schools.push(newSchool);
             } else if (row.hasClass("dept-title")) {
                 let newDept = new classes.Department(row.text());
-                newDept.addComment(row.next().hasClass("dept-comment") ? row.next().text().trim().replace(/\t+/g, '') : '');
+                newDept.addComment(row.next().hasClass("dept-comment") ? sanitize(row.next().text()) : '');
                 lastSchool.addDepartment(newDept);
                 lastDept = newDept;
             } else if (row.hasClass("num-range-comment")) {
                 if (lastDept.comments === '') {
-                    lastDept.addComment(row.text().trim().replace(/\t+/g, ''));
+                    lastDept.addComment(sanitize(row.text()));
                 } else {
-                    lastDept.addComment('\n\n' + row.text().trim().replace(/\t+/g, ''));
+                    lastDept.addComment('\n\n' + sanitize(row.text()));
                 }
             } else if (row.is("tr[valign='top'][bgcolor='#fff0ff']")) {
                 let courseName = [row.text(), row.find('b').text()];
-                courseName[0] = courseName[0].replace(new RegExp('s+|' + courseName[1] + '|\\(Prerequisites\\)', 'g'), '').trim();
+                courseName[0] = sanitize(courseName);
                 let newCourse = new classes.Course(courseName);
                 lastDept.addCourse(newCourse);
-                newCourse.addComment(row.next().find('.Comments').text().trim().replace(/\s+/g, ' '));
-                lastCourse = newCourse
+                newCourse.addComment(sanitize(row.next().find('.Comments').text()));
+                lastCourse = newCourse;
             } else if (row.is("tr[valign='top'][bgcolor='#FFFFCC']") || row.is("tr[valign='top']")) {
                 let sectionData = {};
 
                 row.find('td').each(function (i) {
                     let cell = $(this);
                     let cellText = cell.text();
+
                     switch (i) {
                         case 0:
                             sectionData.classCode = cellText;
@@ -116,18 +120,16 @@ function parseForClasses(htmlBody) {
                             break;
                         case 5:
                             sectionData.times = cell.html().split("<br>");
-                            if (sectionData.times) {
-                            }
                             sectionData.times.forEach(function (currentValue, index, array) {
-                                array[index] = array[index].replace('&#xA0;', '');
-                                array[index] = array[index].replace('- ', '-');
-                                if (array[index].includes('TBA')) {
-                                    array[index] = 'TBA'
+                                if (currentValue.includes('TBA')) {
+                                    array[index] = 'TBA';
+                                } else {
+                                    array[index] = sanitize(currentValue);
                                 }
                             });
                             break;
                         case 6:
-                            cell.find('a').each(function (j, elem) {
+                            cell.find('a').each(function () {
                                 $(this).replaceWith($(this).text());
                             });
                             sectionData.places = cell.html().split("<br>");
@@ -155,6 +157,9 @@ function parseForClasses(htmlBody) {
                             break;
                         case 13:
                             sectionData.restrictions = cellText.split('and');
+                            sectionData.restrictions.forEach(function (currentValue, index, array) {
+                                array[index] = sanitize(currentValue);
+                            });
                             //TODO: Find out what 'or' means with restrictions
                             break;
                         case 16:
@@ -167,8 +172,9 @@ function parseForClasses(htmlBody) {
 
                 let newSection = new classes.Section(sectionData);
                 lastCourse.sections.push(newSection);
-                if (!row.next().hasClass("blue-bar") && row.next().prop("valign") === undefined) {
-                    newSection.addComment(row.next().text());
+                let attrs = Object.keys(row.next().attr());
+                if (attrs.length === 0 || (attrs.length === 1 && row.next().attr('bgcolor') === '#FFFFCC')) {
+                    newSection.addComment(sanitize(row.next().text()));
                 }
             }
         });
@@ -176,6 +182,27 @@ function parseForClasses(htmlBody) {
     return schools;
 }
 
-postToWebSoc({term: "2017-92", department: "BIO SCI"}, (result) => {
-    //console.log(result)
+function sanitize(input) {
+    let sanitizedString = input;
+    if (typeof input === 'object') {
+        sanitizedString = input[0].replace(new RegExp(input[1] + '|\\(Co-courses\\)|\\(Prerequisites\\)', 'g'), '');
+    }
+    sanitizedString = sanitizedString.replace(/\t|&#xA0|;/g, '');
+    sanitizedString = sanitizedString.replace(/[^\S\r\n]+/g, ' ');
+    sanitizedString = sanitizedString.replace(/- /, '-');
+    sanitizedString = sanitizedString.trim();
+    return sanitizedString;
+}
+
+//TODO: fix regex bug
+postToWebSoc({term: "2017-92", department: "BME"}, (result) => {
+    result.forEach(function callback(school, index, array) {
+        // console.log(school.toString());
+        school.departments.forEach(function callback(dept, index, array) {
+            // console.log(dept.toString());
+            dept.courses.forEach(function callback(course, index, array) {
+                console.log(course.toString())
+            })
+        });
+    });
 });
