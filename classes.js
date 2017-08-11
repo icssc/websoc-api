@@ -1,5 +1,3 @@
-'use strict'
-
 class School {
     constructor(name) {
         this._comments = "";
@@ -25,6 +23,21 @@ class School {
 
     get departments() {
         return this._departments;
+    }
+
+    toString() {
+        let string = '';
+        string += "Name: " + this._name + '\n';
+        string += "Departments: ";
+        this._departments.forEach(function (currentValue, index, array) {
+            if (index < array.length - 1) {
+                string += currentValue._name + ', ';
+            } else {
+                string += currentValue._name + '\n';
+            }
+        });
+        string += "Comments: \n" + this._comments + (this._comments ? '\n' : '');
+        return string;
     }
 }
 
@@ -54,6 +67,21 @@ class Department {
     get courses() {
         return this._courses;
     }
+
+    toString() {
+        let string = '';
+        string += "Name: " + this._name + '\n';
+        string += "Courses: ";
+        this._courses.forEach(function (currentValue, index, array) {
+            if (index < array.length - 1) {
+                string += currentValue._name[0] + ' ' + currentValue._name[1] + ', ';
+            } else {
+                string += currentValue._name + '\n';
+            }
+        });
+        string += "Comments: \n" + this._comments + (this._comments ? '\n' : '');
+        return string;
+    }
 }
 
 class Course {
@@ -81,6 +109,20 @@ class Course {
 
     get sections() {
         return this._sections;
+    }
+
+    toString() {
+        let string = '';
+        string += "Name: " + this._name[0] + ' ' + this.name[1] + '\n';
+        string += "Sections: \n";
+        this._sections.forEach(function (currentValue, index, array) {
+            if (index < array.length - 1) {
+                string += currentValue.toString() + '\n';
+            } else {
+                string += currentValue.toString() + '\n';
+            }
+        });
+        return string;
     }
 }
 
@@ -170,6 +212,11 @@ class Section {
 
     get comments() {
         return this._comments;
+    }
+
+    toString() {
+        return `${this._classCode} ${this._classType} ${this._sectionCode} ${this._units} [${this._instructors}] [${this._times}] [${this._places}] ${this._finalExamDate} ${this._maxCapacity} ${this._numCurrentlyEnrolled} ${this._numOnWaitlist} ${this._numRequested} ${this._numNewOnlyReserved} [${this._restrictions}] ${this._status}`
+        +'\n' + this._comments + (this._comments ? '' : '\n');
     }
 }
 
