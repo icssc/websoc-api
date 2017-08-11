@@ -27,7 +27,7 @@ class School {
 
     toString() {
         let string = '';
-        string += "Name: " + this._name + '\n';
+        string += "School name: " + this._name + '\n';
         string += "Departments: ";
         this._departments.forEach(function (currentValue, index, array) {
             if (index < array.length - 1) {
@@ -70,7 +70,7 @@ class Department {
 
     toString() {
         let string = '';
-        string += "Name: " + this._name + '\n';
+        string += "Department name: " + this._name + '\n';
         string += "Courses: ";
         this._courses.forEach(function (currentValue, index, array) {
             if (index < array.length - 1) {
@@ -113,7 +113,7 @@ class Course {
 
     toString() {
         let string = '';
-        string += "Name: " + this._name[0] + ' ' + this.name[1] + '\n';
+        string += "Course name: " + this._name[0] + ' ' + this.name[1] + '\n';
         string += "Comments: \n" + this._comments + (this._comments ? "\n" : '');
         string += "Sections: \n";
         this._sections.forEach(function (currentValue, index, array) {
