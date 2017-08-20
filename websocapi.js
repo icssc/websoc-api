@@ -79,7 +79,7 @@ function parseForClasses(htmlBody) {
                 newDept.addComment(row.next().hasClass("dept-comment") ? sanitize(row.next().text()) : '');
                 lastSchool.addDepartment(newDept);
                 lastDept = newDept;
-            } else if (row.hasClass("num-range-comment")) {
+            } else if (row.hasClass("num-range-comment") || row.hasClass("ccode-range-comment")) {
                 if (lastDept.comments === '') {
                     lastDept.addComment(sanitize(row.text()));
                 } else {
@@ -187,10 +187,11 @@ function sanitize(input) {
     if (typeof input === 'object') {
         sanitizedString = input[0].replace(new RegExp(input[1] + '|\\(Co-courses\\)|\\(Prerequisites\\)', 'g'), '');
     }
-    sanitizedString = sanitizedString.replace(/\t|&#xA0|;/g, '');
+    sanitizedString = sanitizedString.replace(/\t+|&#xA0|;/g, '');
     sanitizedString = sanitizedString.replace(/[^\S\r\n]+/g, ' ');
     sanitizedString = sanitizedString.replace(/- /, '-');
     sanitizedString = sanitizedString.trim();
+    sanitizedString = sanitizedString.replace(/\n \n /g, '\n');
     return sanitizedString;
 }
 
