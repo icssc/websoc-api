@@ -4,8 +4,8 @@ const classes = require("./classes.js");
 const request = require("request");
 const cheerio = require("cheerio");
 
-function postToWebSoc({
-                          term, breadth = 'ANY', department = 'ALL', courseNum = '', division = 'ANY', courseCodes = '',
+function callWebSocAPI({
+                          term, GE = 'ANY', department = 'ALL', courseNum = '', division = 'ANY', courseCodes = '',
                           instructorName = '', courseTitle = '', classType = 'ALL', units = '', days = '',
                           startTime = '', endTime = '', maxCap = '', fullCourses = 'ANY', cancelledCourses = 'EXCLUDE',
                           building = '', room = ''
@@ -13,8 +13,10 @@ function postToWebSoc({
 
     if (term === undefined || term === '') {
         throw new Error("Define the term");
-    } else if (department === "ALL" && breadth === "ANY" && courseCodes === '' && instructorName === '') {
-        throw new Error("Define at least one of department, breadth, courseCodes, or instructorName");
+    } else if (department === "ALL" && GE === "ANY" && courseCodes === '' && instructorName === '') {
+        throw new Error("Define at least one of department, GE, courseCodes, or instructorName");
+    } else if (building === '' && room !== '') {
+        throw new Error("You must specify a building code if you specify a room number")
     }
 
     let postData = {
@@ -24,7 +26,7 @@ function postToWebSoc({
             YearTerm: term,
             ShowComments: 'on',
             ShowFinals: 'on',
-            Breadth: breadth,
+            Breadth: GE,
             Dept: department,
             CourseNum: courseNum,
             Division: division,
@@ -56,10 +58,10 @@ function postToWebSoc({
 }
 
 function parseForClasses(htmlBody) {
-    let $ = cheerio.load(htmlBody);
-    let root = $('.course-list > table:nth-child(1) > tbody:nth-child(1)');
+    const $ = cheerio.load(htmlBody);
+    const root = $('.course-list > table:nth-child(1) > tbody:nth-child(1)');
 
-    let schools = [];
+    const schools = [];
 
     let lastSchool;
     let row;
@@ -196,14 +198,16 @@ function sanitize(input) {
 }
 
 //TODO: fix regex bug
-postToWebSoc({term: "2017-92", department: "BME"}, (result) => {
-    result.forEach(function callback(school, index, array) {
+callWebSocAPI({term: "2017-92", department: "BIO SCI"}, (result) => {
+    result.forEach(function callback(school) {
         // console.log(school.toString());
-        school.departments.forEach(function callback(dept, index, array) {
-            // console.log(dept.toString());
-            dept.courses.forEach(function callback(course, index, array) {
-                console.log(course.toString())
+        school.departments.forEach(function callback(dept) {
+            console.log(dept.toString());
+            dept.courses.forEach(function callback(course) {
+                // console.log(course.toString())
             })
         });
     });
 });
+
+module.exports.callWebSocAPI = callWebSocAPI;

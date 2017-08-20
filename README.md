@@ -1,7 +1,34 @@
-### Introduction
+## Introduction
 A nodejs module to access listings from UCI's schedule of classes, [WebSoc](https://www.reg.uci.edu/perl/WebSoc).
 This API allows access to school, department, course, and section data in JSON format.
-### Installation
+## Installation
 `$ npm install websoc-api`
 
-### Features
+## Documentation
+### Retrieving class listings
+#### callWebSocAPI(options, callback) {
+To retrieve class listings, you just call this function `callWebSocAPI` and pass in two parameters. The first parameter, options, is an object
+that configures what you're looking for, such as department, term, division etc. The second parameter is a callback function
+that is called when the function is done retrieving classes.
+
+##### options
+| Name             | Description                                                                                                                                | Formatting                                                   | Note                                                                                          | Default |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------|
+| Term             | The term being searched                                                                                                                    |                                                              | Required                                                                                      | None    |
+| GE               | Restricts the search to a certain GE category                                                                                              |                                                              | Must specify at least one of department, GE, courseCodes, or instructorName                   | None    |
+| department       | Restricts the search to a certain department                                                                                               |                                                              | Must specify at least one of department, GE, courseCodes, or instructorName                   | None    |
+| courseNum        | Restricts the search to a certain course number or courses in that range                                                                   |                                                              |                                                                                               | None    |
+| division         | Restrict the search to show lower division, upper division, or graduate courses                                                            |                                                              |                                                                                               | All     |
+| courseCodes      | Restrict the search to a unique 5-digit section code, or sections in that range of codes                                                   |                                                              | Must specify at least one of department, GE, courseCodes, or instructorName                   |         |
+| instructorName   | Restrict the search to courses taught by a certain instructor                                                                              |                                                              |                                                                                               |         |
+| courseTitle      | Search for keywords in the name of the course                                                                                              |                                                              |                                                                                               |         |
+| classType        | Restrict the search to one type of class                                                                                                   |                                                              |                                                                                               |         |
+| units            | Restricts the search to courses that are worth the specified amount of units.                                                              |                                                              |                                                                                               |         |
+| days             | Restricts the search to courses held on the days specified                                                                                 |                                                              |                                                                                               |         |
+| startTime        | Restrict the search to courses that start on or after the time specified                                                                   |                                                              |                                                                                               |         |
+| endTime          | Restrict the search to courses that end by the time specified                                                                              |                                                              |                                                                                               |         |
+| maxCap           | Restricts search to courses that have this enrollment capacity.                                                                            |                                                              |                                                                                               |         |
+| fullCourses      | Specify whether to exclude full courses, show full courses if they have  space on the wait-list, or show only full or wait-listed courses. |                                                              |                                                                                               |         |
+| cancelledCourses | Specify whether to exclude full courses, include cancelled courses, or  only show cancelled courses                                        | `cancelledCourses: 'INCLUDE'` or `cancelledCourses: 'ONLY'`  |                                                                                               |         |
+| building         | Restrict the search to courses held in a certain building.                                                                                 | `building: 'DBH'`                                            | The value is a building code. Building codes found here: https://www.reg.uci.edu/addl/campus/ |         |
+| room             | Restrict the search to courses held in a certain room.                                                                                     | `room: '420'`                                                | You must specify a building code if you specify a room number                                 |         |
