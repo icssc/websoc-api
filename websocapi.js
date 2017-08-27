@@ -19,6 +19,32 @@ function callWebSocAPI({
         throw new Error("You must specify a building code if you specify a room number")
     }
 
+    const lowerCaseTerm = term.toLowerCase();
+    if (lowerCaseTerm.includes('fall')) {
+        term = lowerCaseTerm.slice(0, 4) + '-92';
+    } else if (lowerCaseTerm.includes('winter')) {
+        term = lowerCaseTerm.slice(0, 4) + '-03';
+    } else if (lowerCaseTerm.includes('spring')) {
+        term = lowerCaseTerm.slice(0, 4) + '-14';
+    } else if (lowerCaseTerm.includes('summer1')) {
+        term = lowerCaseTerm.slice(0, 4) + '-25';
+    } else if (lowerCaseTerm.includes('summer2')) {
+        term = lowerCaseTerm.slice(0, 4) + '-76';
+    } else if (lowerCaseTerm.includes('summer10wk')) {
+        term = lowerCaseTerm.slice(0, 4) + '-39';
+    }
+
+    const lowerCaseDiv = division.toLowerCase();
+    if (lowerCaseDiv === 'all') {
+        division = 'all'
+    } else if (lowerCaseDiv === 'lowerdiv') {
+        division = '0xx';
+    } else if (lowerCaseDiv === 'upperdiv') {
+        division = '1xx';
+    } else if (lowerCaseDiv === 'graduate') {
+        division = '2xx';
+    }
+
     let postData = {
         url: "https://www.reg.uci.edu/perl/WebSoc",
         form: {
@@ -198,7 +224,7 @@ function sanitize(input) {
 }
 
 //TODO: fix regex bug
-callWebSocAPI({term: "2017-92", department: "BIO SCI"}, (result) => {
+callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
     result.forEach(function callback(school) {
         // console.log(school.toString());
         school.departments.forEach(function callback(dept) {
