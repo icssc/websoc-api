@@ -200,9 +200,11 @@ function parseForClasses(htmlBody) {
 
                 let newSection = new classes.Section(sectionData);
                 lastCourse.sections.push(newSection);
-                let attrs = Object.keys(row.next().attr());
-                if (attrs.length === 0 || (attrs.length === 1 && row.next().attr('bgcolor') === '#FFFFCC')) {
-                    newSection.addComment(sanitize(row.next().text()));
+                if (row.next().attr() !== undefined) {
+                    let attrs = Object.keys(row.next().attr());
+                    if (attrs.length === 0 || (attrs.length === 1 && row.next().attr('bgcolor') === '#FFFFCC')) {
+                        newSection.addComment(sanitize(row.next().text()));
+                    }
                 }
             }
         });
@@ -224,7 +226,8 @@ function sanitize(input) {
 }
 
 //TODO: fix regex bug
-callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
+// TODO: multiple tables in one search?
+callWebSocAPI({term: "2016 Winter", department: "BIO SCI"}, (result) => {
     result.forEach(function callback(school) {
         // console.log(school.toString());
         school.departments.forEach(function callback(dept) {
