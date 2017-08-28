@@ -227,13 +227,14 @@ function sanitize(input) {
 
 //TODO: fix regex bug
 // TODO: multiple tables in one search?
-callWebSocAPI({term: "2016 Winter", department: "BIO SCI"}, (result) => {
+// TODO: Convert appropriate fields to number instead od string?
+callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
     result.forEach(function callback(school) {
         // console.log(school.toString());
         school.departments.forEach(function callback(dept) {
-            console.log(dept.toString());
+            // console.log(dept.toString());
             dept.courses.forEach(function callback(course) {
-                // console.log(course.toString())
+                console.log(course.name)
             })
         });
     });

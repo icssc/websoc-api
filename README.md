@@ -34,7 +34,7 @@ that is called when the function is done retrieving classes.
 ##### callback(result)
 Callback is a callback function that is called when the class data retrieval is finished. It passes in result, which is an array of `School` objects.
 
-### Usage
+#### Usage
 ```javascript
 // Import the module
 const WebSocAPI = require('websoc-api');
@@ -42,15 +42,62 @@ const WebSocAPI = require('websoc-api');
 //Specify our search parameters
 const opts = {
     term: '2017 Fall',
-    ge: 'GE-2',
+    GE: 'GE-2',
     instructorName: 'Pattis'
 }
 
-// Call the module, and when it is done, print out every school's
-// name
+// Call the module, and when it is done, print out every school's name
 WebSocAPI.callWebSocAPI(opts, function(result) {
     for (let i = 0; i < result.length; i++) {
         console.log(result[i].name);
     }
 })
 ```
+
+### Using retrieved data
+The API serves its data in a hierarchical manner.
+As shown above, the results are served to the callback in an array of schools. Each `school` in the array contains `department`s, which contains `course`s, which contain `section`s.
+
+#### School
+| Field       | Type                        | Notes                                                                                                    |
+|-------------|-----------------------------|----------------------------------------------------------------------------------------------------------|
+| name        | string                      | The name of the school like 'Donald Bren School of Information and Computer Science'                     |
+| comments    | string                      | Comments that the school put on WebSoc. For instance, comments talk about add, drop and change policies. |
+| departments | array of department objects |                                                                                                          |
+| toString    | function                    | A string representation of the school, listing its name, comments, and departments.                      |
+
+#### Department
+| Field    | Type                    | Notes                                                                                               |
+|----------|-------------------------|-----------------------------------------------------------------------------------------------------|
+| name     | string                  | The name of the department like 'Informatics'                                                       |
+| comments | string                  | Comments that the department put on WebSoc. Includes department comments and course range comments. |
+| courses  | array of course objects |                                                                                                     |
+| toString | function                | A string representation of the school, listing its name, comments, and courses.                     |
+
+#### Course
+| Field    | Type                     | Notes                                                                                                                                                 |
+|----------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name     | array                    | The array has two indices. The first one is its dept and number, the second one is its actual name. Example: \['I&C SCI 33', 'INTERMEDIATE PRGRMG'\] |
+| comments | string                   |                                                                                                                                                       |
+| sections | array of section objects |                                                                                                                                                       |
+| toString | function                 | A string representation of the course, listing its name, comments, and sections.                                                                      |
+
+#### Section
+| Field                | Type   | Notes                                                                                                                                                       |
+|----------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| classCode            | string |                                                                                                                                                             |
+| classType            | string |                                                                                                                                                             |
+| sectionCode          | string |                                                                                                                                                             |
+| units                | string |                                                                                                                                                             |
+| instructors          | array  | Each instructor listed will have their own index.                                                                                                           |
+| times                | array  | Each class time listed will have its own index. Will be ['TBA'] if unknown.                                                                                 |
+| places               | array  | Each place listed will have its own index. Will be ['TBA'] if unknown.                                                                                      |
+| finalExamDate        | string | Will be 'NONE' if the class has no final exam.                                                                                                              |
+| maxCapacity          | string |                                                                                                                                                             |
+| numCurrentlyEnrolled | string | Value like '272 / 347' means 'section / joint' enrollment totals for cross-listed courses.                                                                  |
+| numOnWaitlist        | string |                                                                                                                                                             |
+| numRequested         | string |                                                                                                                                                             |
+| numNewOnlyReserved   | string |                                                                                                                                                             |
+| restrictions         | array  | Each restriction code has its own index. <br />The restriction code definitions can be found [here](https://www.reg.uci.edu/enrollment/restrict_codes.html) |
+| status               | string |                                                                                                                                                             |
+| comments             | string |                                                                                                                                                             |
