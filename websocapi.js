@@ -215,7 +215,7 @@ function parseForClasses(htmlBody) {
 function sanitize(input) {
     let sanitizedString = input;
     if (typeof input === 'object') {
-        sanitizedString = input[0].replace(new RegExp(input[1] + '|\\(Co-courses\\)|\\(Prerequisites\\)', 'g'), '');
+        sanitizedString = input[0].replace(new RegExp(escapeRegExp(input[1]) + '|\\(Co-courses\\)|\\(Prerequisites\\)', 'g'), '');
     }
     sanitizedString = sanitizedString.replace(/\t+|&#xA0|;/g, '');
     sanitizedString = sanitizedString.replace(/[^\S\r\n]+/g, ' ');
@@ -225,19 +225,21 @@ function sanitize(input) {
     return sanitizedString;
 }
 
-//TODO: fix regex bug
-// TODO: multiple tables in one search?
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 // TODO: Convert appropriate fields to number instead od string?
-callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
-    result.forEach(function callback(school) {
-        // console.log(school.toString());
-        school.departments.forEach(function callback(dept) {
-            // console.log(dept.toString());
-            dept.courses.forEach(function callback(course) {
-                console.log(course.name)
-            })
-        });
-    });
-});
+// callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
+//     result.forEach(function callback(school) {
+//         // console.log(school.toString());
+//         school.departments.forEach(function callback(dept) {
+//             // console.log(dept.toString());
+//             dept.courses.forEach(function callback(course) {
+//                 console.log(course.name)
+//             })
+//         });
+//     });
+// });
 
 module.exports.callWebSocAPI = callWebSocAPI;
