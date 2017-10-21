@@ -19,43 +19,20 @@ function callWebSocAPI({
         throw new Error("You must specify a building code if you specify a room number")
     }
 
-    const lowerCaseTerm = term.toLowerCase();
-    if (lowerCaseTerm.includes('fall')) {
-        term = lowerCaseTerm.slice(0, 4) + '-92';
-    } else if (lowerCaseTerm.includes('winter')) {
-        term = lowerCaseTerm.slice(0, 4) + '-03';
-    } else if (lowerCaseTerm.includes('spring')) {
-        term = lowerCaseTerm.slice(0, 4) + '-14';
-    } else if (lowerCaseTerm.includes('summer1')) {
-        term = lowerCaseTerm.slice(0, 4) + '-25';
-    } else if (lowerCaseTerm.includes('summer2')) {
-        term = lowerCaseTerm.slice(0, 4) + '-76';
-    } else if (lowerCaseTerm.includes('summer10wk')) {
-        term = lowerCaseTerm.slice(0, 4) + '-39';
-    }
+    let codedTerm = getCodedTerm(term.toLowerCase());
+    let codedDiv = getCodedDiv(division.toLowerCase());
 
-    const lowerCaseDiv = division.toLowerCase();
-    if (lowerCaseDiv === 'all') {
-        division = 'all'
-    } else if (lowerCaseDiv === 'lowerdiv') {
-        division = '0xx';
-    } else if (lowerCaseDiv === 'upperdiv') {
-        division = '1xx';
-    } else if (lowerCaseDiv === 'graduate') {
-        division = '2xx';
-    }
-
-    let postData = {
+    const postData = {
         url: "https://www.reg.uci.edu/perl/WebSoc",
         form: {
             Submit: 'Display Web Results',
-            YearTerm: term,
+            YearTerm: codedTerm,
             ShowComments: 'on',
             ShowFinals: 'on',
             Breadth: GE,
             Dept: department,
             CourseNum: courseNum,
-            Division: division,
+            Division: codedDiv,
             CourseCodes: courseCodes,
             InstrName: instructorName,
             CourseTitle: courseTitle,
@@ -72,15 +49,49 @@ function callWebSocAPI({
         },
     };
 
-    console.time('total');
     request.post(postData, (err, res, body) => {
         if (!err && res.statusCode === 200) {
             callback(parseForClasses(body));
-            console.timeEnd('total');
         } else {
-            console.err(err);
+            console.error(err);
         }
     });
+}
+
+function getCodedTerm(term) {
+    let actualTerm = '';
+
+    if (term.includes('fall')) {
+        actualTerm = term.slice(0, 4) + '-92';
+    } else if (term.includes('winter')) {
+        actualTerm = term.slice(0, 4) + '-03';
+    } else if (term.includes('spring')) {
+        actualTerm = term.slice(0, 4) + '-14';
+    } else if (term.includes('summer1')) {
+        actualTerm = term.slice(0, 4) + '-25';
+    } else if (term.includes('summer2')) {
+        actualTerm = term.slice(0, 4) + '-76';
+    } else if (term.includes('summer10wk')) {
+        actualTerm = term.slice(0, 4) + '-39';
+    }
+
+    return actualTerm
+}
+
+function getCodedDiv(div) {
+    let codedDiv = div.toLowerCase();
+
+    if (codedDiv === 'all') {
+        codedDiv = 'all'
+    } else if (codedDiv === 'lowerdiv') {
+        codedDiv = '0xx';
+    } else if (codedDiv === 'upperdiv') {
+        codedDiv = '1xx';
+    } else if (codedDiv === 'graduate') {
+        codedDiv = '2xx';
+    }
+
+    return codedDiv
 }
 
 function parseForClasses(htmlBody) {

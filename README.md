@@ -2,7 +2,7 @@
 A nodejs module to access listings from UCI's schedule of classes, [WebSoc](https://www.reg.uci.edu/perl/WebSoc).
 This API allows access to school, department, course, and section data in a hierarchical JSON format.
 ## Installation
-Drop in websocapi.js into your project then import:
+Drop in websocapi.js and classes.js into your project then import:
 
 ```javascript
 const WebSocAPI = require('./websocapi.js');
