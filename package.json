@@ -2,7 +2,8 @@
   "name": "websoc-api",
   "version": "1.0.0",
   "scripts": {
-    "start": "node ./websocapi.js"
+    "start": "node ./websocapi.js",
+    "test": "mocha"
   },
   "dependencies": {
     "request": "^2.81.0",
