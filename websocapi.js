@@ -96,7 +96,7 @@ function getCodedDiv(div) {
 
 function parseForClasses(htmlBody) {
     const $ = cheerio.load(htmlBody);
-    const root = $('.course-list > table:nth-child(1) > tbody:nth-child(1)');
+    const root = $('.course-list');
 
     const schools = [];
 
@@ -105,7 +105,7 @@ function parseForClasses(htmlBody) {
     let lastDept;
     let lastCourse;
 
-    root.find('tr').each(
+    root.find('table').find('tbody').find('tr').each(
         function () {
             row = $(this);
             if (row.hasClass("college-title")) {
@@ -240,17 +240,19 @@ function escapeRegExp(str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+// TODO: Parse multiple tables
 // TODO: Convert appropriate fields to number instead od string?
-// callWebSocAPI({term: "2017 Fall", department: "BIO SCI"}, (result) => {
-//     result.forEach(function callback(school) {
-//         // console.log(school.toString());
-//         school.departments.forEach(function callback(dept) {
-//             // console.log(dept.toString());
-//             dept.courses.forEach(function callback(course) {
-//                 console.log(course.name)
-//             })
-//         });
-//     });
-// });
+callWebSocAPI({term: "2017 Fall", department: "CSE"}, (result) => {
+    result.forEach(function callback(school) {
+        console.log(school.toString());
+        school.departments.forEach(function callback(dept) {
+            console.log(dept.toString());
+            dept.courses.forEach(function callback(course) {
+                console.log(course.name)
+            })
+        });
+    });
+});
 
 module.exports.callWebSocAPI = callWebSocAPI;
+module.exports.parseForClasses = parseForClasses;
