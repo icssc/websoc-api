@@ -51,7 +51,7 @@ function callWebSocAPI({
 
     request.post(postData, (err, res, body) => {
         if (!err && res.statusCode === 200) {
-            callback(parseForClasses(body));
+            callback(parse(body));
         } else {
             console.error(err);
         }
@@ -94,7 +94,7 @@ function getCodedDiv(div) {
     return codedDiv
 }
 
-function parseForClasses(htmlBody) {
+function parse(htmlBody) {
     const $ = cheerio.load(htmlBody);
     const root = $('.course-list');
 
@@ -240,19 +240,5 @@ function escapeRegExp(str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-// TODO: Parse multiple tables
-// TODO: Convert appropriate fields to number instead od string?
-callWebSocAPI({term: "2017 Fall", department: "CSE"}, (result) => {
-    result.forEach(function callback(school) {
-        console.log(school.toString());
-        school.departments.forEach(function callback(dept) {
-            console.log(dept.toString());
-            dept.courses.forEach(function callback(course) {
-                console.log(course.name)
-            })
-        });
-    });
-});
-
 module.exports.callWebSocAPI = callWebSocAPI;
-module.exports.parseForClasses = parseForClasses;
+module.exports.parseForClasses = parse;
