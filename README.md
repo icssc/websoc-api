@@ -104,6 +104,6 @@ As shown above, the results are served to the callback in an array of schools. E
 | numOnWaitlist        | string |                                                                                                                                                             |
 | numRequested         | string |                                                                                                                                                             |
 | numNewOnlyReserved   | string |                                                                                                                                                             |
-| restrictions         | array  | Each restriction code has its own index. <br />The restriction code definitions can be found [here](https://www.reg.uci.edu/enrollment/restrict_codes.html) |
+| restrictions         | string | The restriction code definitions can be found [here](https://www.reg.uci.edu/enrollment/restrict_codes.html)                                                |
 | status               | string |                                                                                                                                                             |
 | comments             | string |                                                                                                                                                             |
