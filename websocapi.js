@@ -195,11 +195,8 @@ function parse(htmlBody) {
                             sectionData.numNewOnlyReserved = cellText;
                             break;
                         case 13:
-                            sectionData.restrictions = cellText.split('and');
-                            sectionData.restrictions.forEach(function (currentValue, index, array) {
-                                array[index] = sanitize(currentValue);
-                            });
-                            //TODO: Find out what 'or' means with restrictions
+                            sectionData.restrictions = sanitize(cellText);
+                            console.log(sectionData.restrictions);
                             break;
                         case 16:
                             sectionData.status = cellText;
@@ -242,3 +239,6 @@ function escapeRegExp(str) {
 
 module.exports.callWebSocAPI = callWebSocAPI;
 module.exports.parseForClasses = parse;
+
+// TODO: Parse function needs to tell between column arangements where NOR and WL columns exists/don't exist
+// TODO: Parse should not separate the restrictions column into an array
