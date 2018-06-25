@@ -82,7 +82,7 @@ function getCodedDiv(div) {
     let codedDiv = div.toLowerCase();
 
     if (codedDiv === 'all') {
-        codedDiv = 'all'
+        codedDiv = 'all';
     } else if (codedDiv === 'lowerdiv') {
         codedDiv = '0xx';
     } else if (codedDiv === 'upperdiv') {
@@ -104,18 +104,22 @@ function parse(htmlBody) {
     let row;
     let lastDept;
     let lastCourse;
+    let numCols;
 
     root.find('table').find('tbody').find('tr').each(
         function () {
             row = $(this);
+
             if (row.hasClass("college-title")) {
                 let newSchool = new classes.School(row.children().text());
                 newSchool.addComment(row.next().hasClass("college-comment") ? sanitize(row.next().text()) : '');
+
                 lastSchool = newSchool;
                 schools.push(newSchool);
             } else if (row.hasClass("dept-title")) {
                 let newDept = new classes.Department(row.text());
                 newDept.addComment(row.next().hasClass("dept-comment") ? sanitize(row.next().text()) : '');
+
                 lastSchool.addDepartment(newDept);
                 lastDept = newDept;
             } else if (row.hasClass("num-range-comment") || row.hasClass("ccode-range-comment")) {
@@ -125,89 +129,17 @@ function parse(htmlBody) {
                     lastDept.addComment('\n\n' + sanitize(row.text()));
                 }
             } else if (row.is("tr[valign='top'][bgcolor='#fff0ff']")) {
-                let courseName = [row.text(), row.find('b').text()];
-                courseName[0] = sanitize(courseName);
+                let courseName = [sanitize(row.text()), row.find('b').text()];
                 let newCourse = new classes.Course(courseName);
                 lastDept.addCourse(newCourse);
                 newCourse.addComment(sanitize(row.next().find('.Comments').text()));
                 lastCourse = newCourse;
+            } else if (row.is("tr[bgcolor='#E7E7E7'][align='left']")) {
+                numCols = row.children().length;
             } else if (row.is("tr[valign='top'][bgcolor='#FFFFCC']") || row.is("tr[valign='top']")) {
-                let sectionData = {};
-
-                row.find('td').each(function (i) {
-                    let cell = $(this);
-                    let cellText = cell.text();
-
-                    switch (i) {
-                        case 0:
-                            sectionData.classCode = cellText;
-                            break;
-                        case 1:
-                            sectionData.classType = cellText;
-                            break;
-                        case 2:
-                            sectionData.sectionCode = cellText;
-                            break;
-                        case 3:
-                            sectionData.units = cellText;
-                            break;
-                        case 4:
-                            sectionData.instructors = cell.html().split("<br>");
-                            if (sectionData.instructors.slice(-1)[0] === '') {
-                                sectionData.instructors.pop();
-                            }
-                            break;
-                        case 5:
-                            sectionData.times = cell.html().split("<br>");
-                            sectionData.times.forEach(function (currentValue, index, array) {
-                                if (currentValue.includes('TBA')) {
-                                    array[index] = 'TBA';
-                                } else {
-                                    array[index] = sanitize(currentValue);
-                                }
-                            });
-                            break;
-                        case 6:
-                            cell.find('a').each(function () {
-                                $(this).replaceWith($(this).text());
-                            });
-                            sectionData.places = cell.html().split("<br>");
-                            break;
-                        case 7:
-                            sectionData.finalExamDate = cellText.trim();
-                            if (sectionData.finalExamDate.length === 0) {
-                                sectionData.finalExamDate = 'NONE';
-                            }
-                            break;
-                        case 8:
-                            sectionData.maxCapacity = cellText;
-                            break;
-                        case 9:
-                            sectionData.numCurrentlyEnrolled = cellText;
-                            break;
-                        case 10:
-                            sectionData.numOnWaitlist = cellText;
-                            break;
-                        case 11:
-                            sectionData.numRequested = cellText;
-                            break;
-                        case 12:
-                            sectionData.numNewOnlyReserved = cellText;
-                            break;
-                        case 13:
-                            sectionData.restrictions = sanitize(cellText);
-                            console.log(sectionData.restrictions);
-                            break;
-                        case 16:
-                            sectionData.status = cellText;
-                            break;
-                        default:
-                            break;
-                    }
-                });
-
-                let newSection = new classes.Section(sectionData);
+                let newSection = new classes.Section(buildSectionData($, row, numCols));
                 lastCourse.sections.push(newSection);
+
                 if (row.next().attr() !== undefined) {
                     let attrs = Object.keys(row.next().attr());
                     if (attrs.length === 0 || (attrs.length === 1 && row.next().attr('bgcolor') === '#FFFFCC')) {
@@ -220,11 +152,128 @@ function parse(htmlBody) {
     return schools;
 }
 
+function buildSectionData(jquery, row, columnCount) {
+    let sectionData = {};
+
+    row.find('td').each(function (i) {
+        let cell = jquery(this);
+        let cellText = cell.text();
+
+        switch (i) {
+            case 0:
+                sectionData.classCode = cellText;
+                break;
+            case 1:
+                sectionData.classType = cellText;
+                break;
+            case 2:
+                sectionData.sectionCode = cellText;
+                break;
+            case 3:
+                sectionData.units = cellText;
+                break;
+            case 4:
+                sectionData.instructors = cell.html().split("<br>");
+                if (sectionData.instructors.slice(-1)[0] === '') {
+                    sectionData.instructors.pop();
+                }
+                break;
+            case 5:
+                sectionData.times = cell.html().split("<br>");
+                sectionData.times.forEach(function (currentValue, index, array) {
+                    if (currentValue.includes('TBA')) {
+                        array[index] = 'TBA';
+                    } else {
+                        array[index] = sanitize(currentValue);
+                    }
+                });
+                break;
+            case 6:
+                cell.find('a').each(function () {
+                    jquery(this).replaceWith(jquery(this).text());
+                });
+                sectionData.places = cell.html().split("<br>");
+                break;
+            case 7:
+                sectionData.finalExamDate = cellText.trim();
+                if (sectionData.finalExamDate.length === 0) {
+                    sectionData.finalExamDate = 'NONE';
+                }
+                break;
+            case 8:
+                sectionData.maxCapacity = cellText;
+                break;
+            case 9:
+                sectionData.numCurrentlyEnrolled = cellText;
+                break;
+            default:
+                break;
+        }
+
+        if (columnCount === 17) {
+            switch (i) {
+                case 10:
+                    sectionData.numOnWaitlist = cellText;
+                    break;
+                case 11:
+                    sectionData.numRequested = cellText;
+                    break;
+                case 12:
+                    sectionData.numNewOnlyReserved = cellText;
+                    break;
+                case 13:
+                    sectionData.restrictions = cellText;
+                    break;
+                case 16:
+                    sectionData.status = cellText;
+                    break;
+                default:
+                    break;
+            }
+        } else if (columnCount === 16) {
+            sectionData.numNewOnlyReserved = 0;
+            switch (i) {
+                case 10:
+                    sectionData.numOnWaitlist = cellText;
+                    break;
+                case 11:
+                    sectionData.numRequested = cellText;
+                    break;
+                case 12:
+                    sectionData.restrictions = cellText;
+                    break;
+                case 15:
+                    sectionData.status = cellText;
+                    break;
+                default:
+                    break;
+            }
+        } else if (columnCount === 15) {
+            sectionData.numOnWaitlist = 0;
+            sectionData.numNewOnlyReserved = 0;
+            switch (i) {
+                case 10:
+                    sectionData.numRequested = cellText;
+                    break;
+                case 11:
+                    sectionData.restrictions = cellText;
+                    break;
+                case 14:
+                    sectionData.status = cellText;
+                    break;
+                default:
+                    break;
+            }
+        }
+    });
+    return sectionData;
+}
+
 function sanitize(input) {
     let sanitizedString = input;
     if (typeof input === 'object') {
         sanitizedString = input[0].replace(new RegExp(escapeRegExp(input[1]) + '|\\(Co-courses\\)|\\(Prerequisites\\)', 'g'), '');
-    }
+    } //TODO: Find a better solution for this
     sanitizedString = sanitizedString.replace(/\t+|&#xA0|;/g, '');
     sanitizedString = sanitizedString.replace(/[^\S\r\n]+/g, ' ');
     sanitizedString = sanitizedString.replace(/- /, '-');
@@ -239,6 +288,3 @@ function escapeRegExp(str) {
 
 module.exports.callWebSocAPI = callWebSocAPI;
 module.exports.parseForClasses = parse;
-
-// TODO: Parse function needs to tell between column arangements where NOR and WL columns exists/don't exist
-// TODO: Parse should not separate the restrictions column into an array

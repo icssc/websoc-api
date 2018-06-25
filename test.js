@@ -14,7 +14,6 @@ describe('Find correct amount of classes', () => {
         const $ = cheerio.load(html);
         let numClassesString = $('.course-summary > dt:nth-child(1)').text();
         let numClasses = numClassesString !== '' ? numClassesString.substring(numClassesString.indexOf(':') + 2) : 0;
-        console.log(numClasses);
 
         return parseInt(numClasses);
     }
