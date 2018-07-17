@@ -1,12 +1,10 @@
+'use strict'
+
 class School {
-    constructor(name) {
-        this._comments = "";
+    constructor(name, comment) {
+        this._comment = comment;
         this._departments = [];
         this._name = name;
-    }
-
-    addComment(comment) {
-        this._comments += comment;
     }
 
     addDepartment(department) {
@@ -17,39 +15,36 @@ class School {
         return this._name;
     }
 
-    get comments() {
-        return this._comments;
+    get comment() {
+        return this._comment;
     }
 
     get departments() {
         return this._departments;
     }
 
+    toJSON() {
+        return {
+            comment: this._comment,
+            departments: this._departments,
+            name: this._name
+        };
+    }
+
     toString() {
-        let string = '';
-        string += "School name: " + this._name + '\n';
-        string += "Departments: ";
-        this._departments.forEach(function (currentValue, index, array) {
-            if (index < array.length - 1) {
-                string += currentValue._name + ', ';
-            } else {
-                string += currentValue._name + '\n';
-            }
-        });
-        string += "Comments: \n" + this._comments + (this._comments ? '\n' : '');
-        return string;
+        return JSON.stringify(this);
     }
 }
 
 class Department {
     constructor(name) {
-        this._comments = "";
+        this._comments = [];
         this._courses = [];
         this._name = name;
     }
 
     addComment(comment) {
-        this._comments += comment;
+        this._comments.push(comment);
     }
 
     addCourse(course) {
@@ -68,31 +63,25 @@ class Department {
         return this._courses;
     }
 
+    toJSON() {
+        return {
+            comments: this._comments,
+            courses: this._courses,
+            name: this._name
+        };
+    }
+
     toString() {
-        let string = '';
-        string += "Department name: " + this._name + '\n';
-        string += "Courses: ";
-        this._courses.forEach(function (currentValue, index, array) {
-            if (index < array.length - 1) {
-                string += currentValue._name[0] + ' ' + currentValue._name[1] + ', ';
-            } else {
-                string += currentValue._name[0] + ' ' + currentValue._name[1] + '\n';
-            }
-        });
-        string += "Comments: \n" + this._comments + (this._comments ? '\n' : '');
-        return string;
+        return JSON.stringify(this);
     }
 }
 
 class Course {
-    constructor(name) {
-        this._comments = "";
+    constructor(name, prerequisiteLink, comment) {
+        this._comment = comment;
         this._sections = [];
         this._name = name;
-    }
-
-    addComment(comment) {
-        this._comments += comment;
+        this._prerequisiteLink = prerequisiteLink;
     }
 
     addSection(section) {
@@ -104,22 +93,28 @@ class Course {
     }
 
     get comments() {
-        return this._comments;
+        return this._comment;
     }
 
     get sections() {
         return this._sections;
     }
 
+    get prerequisiteLink() {
+        return this._prerequisiteLink;
+    }
+
+    toJSON() {
+        return {
+            comment: this._comment,
+            sections: this._sections,
+            name: this._name,
+            prerequisiteLink: this._prerequisiteLink
+        };
+    }
+
     toString() {
-        let string = '';
-        string += "Course name: " + this._name[0] + ' ' + this.name[1] + '\n';
-        string += "Comments: \n" + this._comments + (this._comments ? "\n" : '');
-        string += "Sections: \n";
-        this._sections.forEach(function (currentValue, index, array) {
-            string += currentValue.toString();
-        });
-        return string;
+        return JSON.stringify(this);
     }
 }
 
@@ -130,9 +125,8 @@ class Section {
         this._sectionCode = sectionData.sectionCode;
         this._units = sectionData.units;
         this._instructors = sectionData.instructors;
-        this._times = sectionData.times;
-        this._places = sectionData.places;
-        this._finalExamDate = sectionData.finalExamDate;
+        this._meetings = sectionData.meetings;
+        this._finalExam = sectionData.finalExam;
         this._maxCapacity = sectionData.maxCapacity;
         this._numCurrentlyEnrolled = sectionData.numCurrentlyEnrolled;
         this._numOnWaitlist = sectionData.numOnWaitlist;
@@ -140,11 +134,7 @@ class Section {
         this._numNewOnlyReserved = sectionData.numNewOnlyReserved;
         this._restrictions = sectionData.restrictions;
         this._status = sectionData.status;
-        this._comments = '';
-    }
-
-    addComment(comment) {
-        this._comments += comment;
+        this._comment = sectionData.comment;
     }
 
     get classCode() {
@@ -167,16 +157,12 @@ class Section {
         return this._instructors;
     }
 
-    get times() {
-        return this._times;
+    get meetings() {
+        return this._meetings;
     }
 
-    get places() {
-        return this._places;
-    }
-
-    get finalExamDate() {
-        return this._finalExamDate;
+    get finalExam() {
+        return this._finalExam;
     }
 
     get maxCapacity() {
@@ -207,13 +193,33 @@ class Section {
         return this._status;
     }
 
-    get comments() {
-        return this._comments;
+    get comment() {
+        return this._comment;
+    }
+
+
+    toJSON() {
+        return {
+            classCode: this._classCode,
+            classType: this._classType,
+            sectionCode: this._sectionCode,
+            units: this._units,
+            instructors: this._instructors,
+            meetings: this._meetings,
+            finalExam: this._finalExam,
+            maxCapacity: this._maxCapacity,
+            numCurrentlyEnrolled: this._numCurrentlyEnrolled,
+            numOnWaitlist: this._numOnWaitlist,
+            numRequested: this._numRequested,
+            numNewOnlyReserved: this._numNewOnlyReserved,
+            restrictions: this._restrictions,
+            status: this._status,
+            comment: this._comment
+        };
     }
 
     toString() {
-        return `${this._classCode} ${this._classType} ${this._sectionCode} ${this._units} [${this._instructors}] [${this._times}] [${this._places}] ${this._finalExamDate} ${this._maxCapacity} ${this._numCurrentlyEnrolled} ${this._numOnWaitlist} ${this._numRequested} ${this._numNewOnlyReserved} [${this._restrictions}] ${this._status}`
-        +'\n' + this._comments + '\n' + (this._comments ? "\n" : '');
+        return JSON.stringify(this);
     }
 }
 
