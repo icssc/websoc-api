@@ -197,7 +197,6 @@ class Section {
         return this._comment;
     }
 
-
     toJSON() {
         return {
             classCode: this._classCode,

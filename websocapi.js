@@ -118,7 +118,7 @@ function parse(XMLBody) {
 
             dept.find('course').each(function () {
                 const course = $(this);
-                const courseObj = new classes.Course([course.attr('course_title'), course.attr('course_number')], $('course_prereq_link', course).text(), $('course_comment', course).text());
+                const courseObj = new classes.Course([course.attr('course_number'), course.attr('course_title')], $('course_prereq_link', course).text(), $('course_comment', course).text());
                 deptObj.addCourse(courseObj);
 
                 course.find('section').each(function () {
@@ -134,7 +134,7 @@ function parse(XMLBody) {
                         }).get(),
                         finalExam: $('sec_final', section).text().trim(),
                         maxCapacity: $('sec_enrollment > sec_max_enroll', section).text(),
-                        numCurrentlyEnrolled: $('sec_enrollment > sec_enrolled', section).text(),
+                        numCurrentlyEnrolled: [$('sec_enrollment > sec_enrolled', section).text(), $('sec_enrollment > sec_xlist_subenrolled', section).text() === '' ? $('sec_enrollment > sec_enrolled', section).text() : $('sec_enrollment > sec_xlist_subenrolled', section).text()],
                         numOnWaitlist: $('sec_enrollment > sec_waitlist', section).text() === '' ? '0' : $('sec_enrollment > sec_waitlist', section).text(),
                         numRequested: $('sec_enrollment > sec_enroll_requests', section).text(),
                         numNewOnlyReserved: $('sec_enrollment > sec_new_only_reserved', section).text() === $('course_code', section).text() ? '0' : $('sec_enrollment > sec_new_only_reserved', section).text(),
