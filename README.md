@@ -107,3 +107,4 @@ As shown above, the results are served to the callback in an array of schools. E
 | restrictions         | string                | The restriction code definitions can be found [here](https://www.reg.uci.edu/enrollment/restrict_codes.html)                                                       |
 | status               | string                |                                                                                                                                                                    |
 | comment              | string                |                                                                                                                                                                    |
+| toString             | function              | Returns a JSON string representation of the object                                                                                                                 |
