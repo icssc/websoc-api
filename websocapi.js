@@ -118,7 +118,7 @@ function parse(XMLBody) {
 
             dept.find('course').each(function () {
                 const course = $(this);
-                const courseObj = new classes.Course([course.attr('course_number'), course.attr('course_title')], $('course_prereq_link', course).text(), $('course_comment', course).text());
+                const courseObj = new classes.Course([dept.attr('dept_code'), course.attr('course_number'), course.attr('course_title')], $('course_prereq_link', course).text(), $('course_comment', course).text());
                 deptObj.addCourse(courseObj);
 
                 course.find('section').each(function () {

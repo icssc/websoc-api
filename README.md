@@ -81,13 +81,13 @@ As shown above, the results are served to the callback in an array of schools. E
 | toString | function                | Returns a JSON string representation of the object                                                                                                           |
 
 #### Course
-| Field            | Type                     | Notes                                                                                                          |
-|------------------|--------------------------|----------------------------------------------------------------------------------------------------------------|
-| name             | array                    | The array has two indices. Index 0: Course number, like '33'. Index 1: Course name, like 'INTERMEDIATE PRGRMG'.|
-| comment          | string                   |                                                                                                                |
-| prerequisiteLink | string                   | Link to the registrar's page where prerequistes are listed                                                     |
-| sections         | array of Section objects |                                                                                                                |
-| toString         | function                 | Returns a JSON string representation of the object                                                             |
+| Field            | Type                     | Notes                                                                                                                                                |
+|------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name             | array                    | The array has three indices. Index 0: Dept code, like 'I&C SCI'. Index 1: Course number, like '33'. Index 2: Course name, like 'INTERMEDIATE PRGRMG'.|
+| comment          | string                   |                                                                                                                                                      |
+| prerequisiteLink | string                   | Link to the registrar's page where prerequistes are listed                                                                                           |
+| sections         | array of Section objects |                                                                                                                                                      |
+| toString         | function                 | Returns a JSON string representation of the object                                                                                                   |
 
 #### Section
 | Field                | Type                  | Notes                                                                                                                                                              |
