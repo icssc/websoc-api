@@ -1,14 +1,44 @@
 {
-  "name": "websoc-api",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "node ./websocapi.js",
-    "test": "mocha"
+  "_from": "websoc-api",
+  "_id": "websoc-api@0.0.5",
+  "_inBundle": false,
+  "_integrity": "sha512-sf+/qNu2seXwnpX1hEu2ySnQj/y7eJWLSajcCJ2Is4osSUflgBl4fq4yiQKsSI7iJAjI/3hS5MBo/ABz1e5Txg==",
+  "_location": "/websoc-api",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "websoc-api",
+    "name": "websoc-api",
+    "escapedName": "websoc-api",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/websoc-api/-/websoc-api-0.0.5.tgz",
+  "_shasum": "d17727694da5d147ca761eb91f5019b10e8b5a6f",
+  "_spec": "websoc-api",
+  "_where": "C:\\Users\\Nathan\\Desktop\\New folder",
+  "author": {
+    "name": "devsdevsdevs",
+    "url": "https://github.com/devsdevsdevs"
+  },
+  "bundleDependencies": false,
   "dependencies": {
-    "request": "^2.81.0",
-    "cheerio": "^1.0.0-rc.2",
-    "mocha": "^4.0.1",
-    "chai": "^4.1.2"
-  }
+    "camaro": "3.0.16",
+    "node-fetch": "^2.6.0"
+  },
+  "deprecated": false,
+  "description": "A small library to retrieve course data by scraping UCI's schedule of classes system",
+  "devDependencies": {
+    "node-gyp": "^5.0.1"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "name": "websoc-api",
+  "version": "0.0.5"
 }
