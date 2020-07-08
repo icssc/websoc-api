@@ -1,4 +1,4 @@
-const transform = require('camaro')
+const {transform} = require('camaro')
 const fetch = require("node-fetch");
 const URLSearchParams = require('url').URLSearchParams
 

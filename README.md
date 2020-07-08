@@ -1,19 +1,16 @@
 ## Introduction
 A nodejs module to access listings from UCI's schedule of classes, [WebSoc](https://www.reg.uci.edu/perl/WebSoc).
-This API allows access to school, department, course, and section data in a hierarchical JSON format.
+This API allows access to school, department, course, and section data in a hierarchical JSON format. This module cannot be used on a browser as it uses a library called Camaro that uses features only available in NodeJS.
 ## Installation
-Drop in websocapi.js and classes.js into your project then import:
+**Requires NodeJS 12**
 
-```javascript
-const WebSocAPI = require('./websocapi.js');
-```
+`$ npm install --save websoc-api`
 
 ## Documentation
 ### Retrieving class listings
-#### callWebSocAPI(options, callback(result)) {
-To retrieve class listings, you just call this function `callWebSocAPI` and pass in two parameters. The first parameter, options, is an object-literal
-that configures what you're looking for, such as department, term, division etc. The second parameter is a callback function
-that is called when the function is done retrieving classes.
+#### async callWebSocAPI(options)
+To retrieve class listings, you just call the function you required, `callWebSocAPI` and pass in an object-literal
+that configures what you're looking for, such as department, term, division etc.
 ##### options
 Descriptions found [here](https://www.reg.uci.edu/help/WebSoc-Glossary.shtml)
 
@@ -41,7 +38,7 @@ Descriptions found [here](https://www.reg.uci.edu/help/WebSoc-Glossary.shtml)
 #### Usage
 ```javascript
 // Import the module
-const WebSocAPI = require('./websoc-api');
+const callWebSocAPI = require('websoc-api');
 
 //Specify our search parameters
 const opts = {
@@ -51,9 +48,8 @@ const opts = {
 }
 
 // Call the module, and when the promise resolves, print out the JSON returned
-const result = WebSocAPI.callWebSocAPI(opts);
-result.then((json) => console.log(JSON.stringify(json)));
-
+const result = await WebSocAPI.callWebSocAPI(opts);
+console.log(output);
 ```
 
 ### Using retrieved data
