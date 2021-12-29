@@ -120,13 +120,13 @@ function getCodedTerm(term) {
         actualTerm = term.slice(0, 4) + '-03';
     } else if (term.includes('spring')) {
         actualTerm = term.slice(0, 4) + '-14';
+    } else if (term.includes('summer10wk')) {
+        actualTerm = term.slice(0, 4) + '-39';
     } else if (term.includes('summer1')) {
         actualTerm = term.slice(0, 4) + '-25';
     } else if (term.includes('summer2')) {
         actualTerm = term.slice(0, 4) + '-76';
-    } else if (term.includes('summer10wk')) {
-        actualTerm = term.slice(0, 4) + '-39';
-    }
+    } 
 
     return actualTerm
 }
