@@ -6,7 +6,7 @@
   "bundleDependencies": false,
   "dependencies": {
     "camaro": "^6.0.2",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^3.1.1"
   },
   "deprecated": false,
   "description": "A small library to retrieve course data by scraping UCI's schedule of classes system",
