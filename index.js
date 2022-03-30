@@ -36,7 +36,7 @@ const template = {
                                     finalExam: "normalize-space(concat(sec_final/sec_final_day, ' ', sec_final/sec_final_date, ' ', sec_final/sec_final_time))",
                                     maxCapacity: "sec_enrollment/sec_max_enroll",
                                     numCurrentlyEnrolled: {totalEnrolled: "sec_enrollment/sec_enrolled", sectionEnrolled: "sec_enrollment/sec_xlist_subenrolled"},
-                                    numOnWaitlist: "sec_enrollment/sec_waitlist",
+                                    numOnWaitlist: "sec_enrollment/sec_waitlist[text() != ../../course_code]",
                                     numRequested: "sec_enrollment/sec_enroll_requests",
                                     numNewOnlyReserved: "sec_enrollment/sec_new_only_reserved[text() != ../../course_code]",
                                     restrictions: "sec_restrictions",
