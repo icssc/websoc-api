@@ -3,15 +3,17 @@
     "name": "devsdevsdevs",
     "url": "https://github.com/devsdevsdevs"
   },
-  "bundleDependencies": false,
+  "bundleDependencies": [],
   "dependencies": {
-    "camaro": "^6.0.2",
-    "node-fetch": "^2.6.0"
+    "camaro": "^6.2.0",
+    "node-fetch": "^3.3.0"
   },
   "deprecated": false,
   "description": "A small library to retrieve course data by scraping UCI's schedule of classes system",
   "license": "MIT",
   "main": "index.js",
   "name": "websoc-api",
-  "version": "1.0.3"
+  "version": "1.0.3",
+  "type": "module",
+  "types": "index.d.ts"
 }

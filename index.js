@@ -1,6 +1,5 @@
-const {transform} = require('camaro')
-const fetch = require("node-fetch");
-const URLSearchParams = require('url').URLSearchParams
+import { transform } from 'camaro';
+import fetch from 'node-fetch';
 
 const template = {
     schools: ["//school",
@@ -52,7 +51,7 @@ const template = {
     ]
 }
 
-async function callWebSocAPI({
+export async function callWebSocAPI({
     term, ge = 'ANY', department = 'ALL', courseNumber = '', division = 'ANY', sectionCodes = '',
     instructorName = '', courseTitle = '', sectionType = 'ALL', units = '', days = '',
     startTime = '', endTime = '', maxCapacity = '', fullCourses = 'ANY', cancelledCourses = 'EXCLUDE',
@@ -146,5 +145,3 @@ function getCodedDiv(div) {
 
     return codedDiv
 }
-
-module.exports.callWebSocAPI = callWebSocAPI;
