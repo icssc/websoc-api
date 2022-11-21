@@ -117,4 +117,4 @@ export interface WebsocAPIResponse {
   schools: WebsocSchool[];
 }
 
-declare function callWebSocAPI(options: WebsocAPIOptions): WebsocAPIResponse;
+export function callWebSocAPI(options: WebsocAPIOptions): Promise<WebsocAPIResponse>;
