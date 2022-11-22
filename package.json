@@ -3,9 +3,8 @@
     "name": "devsdevsdevs",
     "url": "https://github.com/devsdevsdevs"
   },
-  "bundleDependencies": [],
   "dependencies": {
-    "camaro": "^6.2.0",
+    "fast-xml-parser": "^4.0.12",
     "node-fetch": "^3.3.0"
   },
   "deprecated": false,
