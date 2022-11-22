@@ -1,6 +1,6 @@
 ## Introduction
 A nodejs module to access listings from UCI's schedule of classes, [WebSoc](https://www.reg.uci.edu/perl/WebSoc).
-This API allows access to school, department, course, and section data in a hierarchical JSON format. This module cannot be used on a browser as it uses a library called Camaro that uses features only available in NodeJS.
+This API allows access to school, department, course, and section data in a hierarchical JSON format.
 ## Installation
 **Requires NodeJS 12**
 
@@ -9,7 +9,7 @@ This API allows access to school, department, course, and section data in a hier
 ## Documentation
 ### Retrieving class listings
 #### async callWebSocAPI(options)
-To retrieve class listings, you just call the function you required, `callWebSocAPI` and pass in an object-literal
+To retrieve class listings, you just call the function you imported, `callWebSocAPI` and pass in an object-literal
 that configures what you're looking for, such as department, term, division etc.
 ##### options
 Descriptions found [here](https://www.reg.uci.edu/help/WebSoc-Glossary.shtml)
@@ -38,7 +38,7 @@ Descriptions found [here](https://www.reg.uci.edu/help/WebSoc-Glossary.shtml)
 #### Usage
 ```javascript
 // Import the module
-const callWebSocAPI = require('websoc-api');
+import { callWebSocAPI } from 'websoc-api';
 
 //Specify our search parameters
 const opts = {
@@ -48,7 +48,7 @@ const opts = {
 }
 
 // Call the module, and when the promise resolves, print out the JSON returned
-const result = await WebSocAPI.callWebSocAPI(opts);
+const result = await callWebSocAPI(opts);
 console.log(output);
 ```
 
